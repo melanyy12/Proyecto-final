@@ -1,4 +1,3 @@
-
 defmodule Hackathon.Services.SistemaChat do
   use GenServer
   alias Hackathon.Domain.Mensaje
@@ -30,18 +29,24 @@ defmodule Hackathon.Services.SistemaChat do
   @impl true
   def handle_call({:enviar_mensaje, emisor_id, contenido, canal}, _from, state) do
     mensaje = Mensaje.nuevo(generar_id(), emisor_id, contenido, canal)
-    RepositorioMensajes.guardar(mensaje)
 
-    # Notificar a suscriptores
-    notificar_suscriptores(state.suscriptores, canal, mensaje)
+    case RepositorioMensajes.guardar(mensaje) do
+      :ok ->
+        # Notificar a suscriptores
+        notificar_suscriptores(state.suscriptores, canal, mensaje)
+        {:reply, {:ok, mensaje}, state}
 
-    {:reply, {:ok, mensaje}, state}
+      {:error, razon} ->
+        {:reply, {:error, razon}, state}
+    end
   end
 
   @impl true
   def handle_call({:historial, canal}, _from, state) do
-    mensajes = RepositorioMensajes.obtener_por_canal(canal)
-    {:reply, {:ok, mensajes}, state}
+    case RepositorioMensajes.obtener_por_canal(canal) do
+      {:ok, mensajes} -> {:reply, {:ok, mensajes}, state}
+      {:error, razon} -> {:reply, {:error, razon}, state}
+    end
   end
 
   @impl true
@@ -57,5 +62,8 @@ defmodule Hackathon.Services.SistemaChat do
     end
   end
 
-  defp generar_id, do: UUID.uuid4()
+  # CORREGIDO: Usar generación de ID sin dependencia externa
+  defp generar_id do
+    :crypto.strong_rand_bytes(16) |> Base.encode16(case: :lower)
+  end
 end

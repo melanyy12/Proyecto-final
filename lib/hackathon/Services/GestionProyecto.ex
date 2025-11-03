@@ -64,7 +64,8 @@ defmodule Hackathon.Services.GestionProyectos do
   """
   def cambiar_estado(proyecto_id, nuevo_estado) do
     with {:ok, proyecto} <- RepositorioProyectos.obtener(proyecto_id),
-         {:ok, proyecto_actualizado} <- validar_cambio_estado(proyecto, nuevo_estado),
+         resultado <- Proyecto.cambiar_estado(proyecto, nuevo_estado),
+         {:ok, proyecto_actualizado} <- validar_resultado_cambio(resultado),
          :ok <- RepositorioProyectos.actualizar(proyecto_actualizado) do
       {:ok, proyecto_actualizado}
     else
@@ -137,14 +138,8 @@ defmodule Hackathon.Services.GestionProyectos do
 
   # Funciones privadas
 
-  defp validar_cambio_estado(proyecto, nuevo_estado) do
-    case Proyecto.cambiar_estado(proyecto, nuevo_estado) do
-      %Proyecto{} = proyecto_actualizado ->
-        {:ok, proyecto_actualizado}
-      {:error, razon} ->
-        {:error, razon}
-    end
-  end
+  defp validar_resultado_cambio(%Proyecto{} = proyecto), do: {:ok, proyecto}
+  defp validar_resultado_cambio({:error, razon}), do: {:error, razon}
 
   defp generar_id, do: :crypto.strong_rand_bytes(16) |> Base.encode16(case: :lower)
 end

@@ -6,4 +6,7 @@ deps/
 erl_crash.dump
 hackathon-*.tar
 .fetch
+
+
 data/*.txt
+data/

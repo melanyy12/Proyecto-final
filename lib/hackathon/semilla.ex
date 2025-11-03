@@ -49,6 +49,7 @@ defmodule Hackathon.Semilla do
     File.rm("data/proyectos.txt")
     File.rm("data/participantes.txt")
     File.rm("data/mentores.txt")
+    File.rm("data/mensajes.txt")
     :ok
   end
 
@@ -68,7 +69,7 @@ defmodule Hackathon.Semilla do
     Enum.map(participantes_data, fn attrs ->
       case GestionParticipantes.registrar_participante(attrs) do
         {:ok, participante} -> participante
-        {:error, _} -> nil
+        _ -> nil
       end
     end)
     |> Enum.reject(&is_nil/1)
@@ -84,7 +85,7 @@ defmodule Hackathon.Semilla do
     Enum.map(mentores_data, fn attrs ->
       case GestionMentores.registrar_mentor(attrs) do
         {:ok, mentor} -> mentor
-        {:error, _} -> nil
+        _ -> nil
       end
     end)
     |> Enum.reject(&is_nil/1)
@@ -100,7 +101,7 @@ defmodule Hackathon.Semilla do
     Enum.map(equipos_data, fn attrs ->
       case GestionEquipos.crear_equipo(attrs) do
         {:ok, equipo} -> equipo
-        {:error, _} -> nil
+        _ -> nil
       end
     end)
     |> Enum.reject(&is_nil/1)
@@ -145,7 +146,7 @@ defmodule Hackathon.Semilla do
     Enum.map(proyectos_data, fn attrs ->
       case GestionProyectos.registrar_proyecto(attrs) do
         {:ok, proyecto} -> proyecto
-        {:error, _} -> nil
+        _ -> nil
       end
     end)
     |> Enum.reject(&is_nil/1)
