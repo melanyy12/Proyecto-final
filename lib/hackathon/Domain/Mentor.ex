@@ -9,17 +9,19 @@ defmodule Hackathon.Domain.Mentor do
     :nombre,
     :especialidad,
     :correo,
+    :password_hash,
     equipos_asignados: [],
     disponible: true,
     max_equipos: 3
   ]
 
-  def nuevo(id, nombre, especialidad, correo) do
+  def nuevo(id, nombre, especialidad, correo, password_hash \\ nil) do
     %__MODULE__{
       id: id,
       nombre: nombre,
       especialidad: especialidad,
-      correo: correo
+      correo: correo,
+      password_hash: password_hash
     }
   end
 
@@ -47,5 +49,20 @@ defmodule Hackathon.Domain.Mentor do
 
   def cambiar_disponibilidad(%__MODULE__{} = mentor, disponible) do
     %{mentor | disponible: disponible}
+  end
+
+  @doc """
+  Hashea una contraseña usando SHA256
+  """
+  def hashear_password(password) when is_binary(password) do
+    :crypto.hash(:sha256, password)
+    |> Base.encode64()
+  end
+
+  @doc """
+  Verifica si una contraseña coincide con el hash almacenado
+  """
+  def verificar_password(password, password_hash) do
+    hashear_password(password) == password_hash
   end
 end

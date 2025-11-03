@@ -1,45 +1,61 @@
 defmodule Hackathon.Semilla do
   @moduledoc """
-  Carga datos iniciales para la hackathon
+  Carga datos iniciales para la hackathon con contraseñas de ejemplo
+  NOTA: Las contraseñas por defecto son "password123" para todos los usuarios
   """
 
   alias Hackathon.Services.{GestionEquipos, GestionProyectos, GestionParticipantes, GestionMentores}
 
+  @password_default "password123"
+
   def cargar_datos do
-    IO.puts("\n Cargando datos iniciales de la Hackathon...")
+    IO.puts("\n🌱 Cargando datos iniciales de la Hackathon...")
 
     # Limpiar datos anteriores
     limpiar_datos()
 
     # Cargar participantes
     participantes = cargar_participantes()
-    IO.puts(" #{length(participantes)} participantes cargados")
+    IO.puts("✅ #{length(participantes)} participantes cargados")
 
     # Cargar mentores
     mentores = cargar_mentores()
-    IO.puts(" #{length(mentores)} mentores cargados")
+    IO.puts("✅ #{length(mentores)} mentores cargados")
 
     # Cargar equipos
     equipos = cargar_equipos()
-    IO.puts(" #{length(equipos)} equipos cargados")
+    IO.puts("✅ #{length(equipos)} equipos cargados")
 
     # Asignar participantes a equipos
     asignar_participantes_a_equipos(participantes, equipos)
-    IO.puts(" Participantes asignados a equipos")
+    IO.puts("✅ Participantes asignados a equipos")
 
     # Cargar proyectos
     proyectos = cargar_proyectos(equipos)
-    IO.puts(" #{length(proyectos)} proyectos cargados")
+    IO.puts("✅ #{length(proyectos)} proyectos cargados")
 
     # Agregar avances
     agregar_avances(proyectos)
-    IO.puts(" Avances agregados a los proyectos")
+    IO.puts("✅ Avances agregados a los proyectos")
 
     # Agregar retroalimentación
     agregar_retroalimentacion(proyectos, mentores)
-    IO.puts(" Retroalimentacion de mentores agregada")
+    IO.puts("✅ Retroalimentacion de mentores agregada")
 
-    IO.puts(" Datos cargados exitosamente!\n")
+    IO.puts("\n📋 CREDENCIALES DE ACCESO:")
+    IO.puts("====================================")
+    IO.puts("Contraseña para TODOS los usuarios: #{@password_default}")
+    IO.puts("\nPARTICIPANTES:")
+    Enum.each(participantes, fn p ->
+      IO.puts("  📧 #{p.correo}")
+    end)
+    IO.puts("\nMENTORES:")
+    Enum.each(mentores, fn m ->
+      IO.puts("  📧 #{m.correo}")
+    end)
+    IO.puts("====================================\n")
+
+    IO.puts("✨ Datos cargados exitosamente!\n")
 
     {:ok, %{equipos: equipos, proyectos: proyectos, participantes: participantes, mentores: mentores}}
   end
@@ -55,15 +71,15 @@ defmodule Hackathon.Semilla do
 
   defp cargar_participantes do
     participantes_data = [
-      %{nombre: "Juan Perez", correo: "juan.perez@email.com", habilidades: ["Backend", "Elixir"]},
-      %{nombre: "Maria Garcia", correo: "maria.garcia@email.com", habilidades: ["Frontend", "React"]},
-      %{nombre: "Carlos Lopez", correo: "carlos.lopez@email.com", habilidades: ["IA", "Python"]},
-      %{nombre: "Ana Martinez", correo: "ana.martinez@email.com", habilidades: ["UX/UI", "Figma"]},
-      %{nombre: "Pedro Rodriguez", correo: "pedro.rodriguez@email.com", habilidades: ["DevOps", "Docker"]},
-      %{nombre: "Laura Sanchez", correo: "laura.sanchez@email.com", habilidades: ["Data Science", "ML"]},
-      %{nombre: "Diego Torres", correo: "diego.torres@email.com", habilidades: ["Mobile", "Flutter"]},
-      %{nombre: "Sofia Ramirez", correo: "sofia.ramirez@email.com", habilidades: ["Backend", "Node.js"]},
-      %{nombre: "Miguel Flores", correo: "miguel.flores@email.com", habilidades: ["QA", "Testing"]}
+      %{nombre: "Juan Perez", correo: "juan.perez@email.com", habilidades: ["Backend", "Elixir"], password: @password_default},
+      %{nombre: "Maria Garcia", correo: "maria.garcia@email.com", habilidades: ["Frontend", "React"], password: @password_default},
+      %{nombre: "Carlos Lopez", correo: "carlos.lopez@email.com", habilidades: ["IA", "Python"], password: @password_default},
+      %{nombre: "Ana Martinez", correo: "ana.martinez@email.com", habilidades: ["UX/UI", "Figma"], password: @password_default},
+      %{nombre: "Pedro Rodriguez", correo: "pedro.rodriguez@email.com", habilidades: ["DevOps", "Docker"], password: @password_default},
+      %{nombre: "Laura Sanchez", correo: "laura.sanchez@email.com", habilidades: ["Data Science", "ML"], password: @password_default},
+      %{nombre: "Diego Torres", correo: "diego.torres@email.com", habilidades: ["Mobile", "Flutter"], password: @password_default},
+      %{nombre: "Sofia Ramirez", correo: "sofia.ramirez@email.com", habilidades: ["Backend", "Node.js"], password: @password_default},
+      %{nombre: "Miguel Flores", correo: "miguel.flores@email.com", habilidades: ["QA", "Testing"], password: @password_default}
     ]
 
     Enum.map(participantes_data, fn attrs ->
@@ -77,9 +93,9 @@ defmodule Hackathon.Semilla do
 
   defp cargar_mentores do
     mentores_data = [
-      %{nombre: "Dr. Roberto Garcia", correo: "roberto.garcia@mentor.com", especialidad: "Inteligencia Artificial"},
-      %{nombre: "Ing. Patricia Lopez", correo: "patricia.lopez@mentor.com", especialidad: "Desarrollo Backend"},
-      %{nombre: "Arq. Fernando Ruiz", correo: "fernando.ruiz@mentor.com", especialidad: "Arquitectura de Software"}
+      %{nombre: "Dr. Roberto Garcia", correo: "roberto.garcia@mentor.com", especialidad: "Inteligencia Artificial", password: @password_default},
+      %{nombre: "Ing. Patricia Lopez", correo: "patricia.lopez@mentor.com", especialidad: "Desarrollo Backend", password: @password_default},
+      %{nombre: "Arq. Fernando Ruiz", correo: "fernando.ruiz@mentor.com", especialidad: "Arquitectura de Software", password: @password_default}
     ]
 
     Enum.map(mentores_data, fn attrs ->

@@ -14,12 +14,12 @@ defmodule Hackathon.MixProject do
 
   def application do
     [
-      extra_applications: [:logger],
+      extra_applications: [:logger, :crypto],
       mod: {Hackathon.Application, []}
     ]
   end
 
   defp deps do
-    []
+    []  # Sin dependencias externas
   end
 end

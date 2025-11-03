@@ -17,6 +17,7 @@ defmodule Hackathon.Adapters.Persistencia.RepositorioParticipantes do
         |> String.split("\n", trim: true)
         |> Enum.map(&deserializar/1)
         |> Enum.reject(&is_nil/1)
+
       {:ok, participantes}
     else
       {:ok, []}
@@ -32,7 +33,9 @@ defmodule Hackathon.Adapters.Persistencia.RepositorioParticipantes do
           nil -> {:error, :no_encontrado}
           participante -> {:ok, participante}
         end
-      error -> error
+
+      error ->
+        error
     end
   end
 
@@ -43,7 +46,9 @@ defmodule Hackathon.Adapters.Persistencia.RepositorioParticipantes do
           nil -> {:error, :no_encontrado}
           participante -> {:ok, participante}
         end
-      error -> error
+
+      error ->
+        error
     end
   end
 
@@ -54,8 +59,11 @@ defmodule Hackathon.Adapters.Persistencia.RepositorioParticipantes do
           Enum.map(participantes, fn p ->
             if p.id == participante.id, do: participante, else: p
           end)
+
         reescribir_archivo(participantes_actualizados)
-      error -> error
+
+      error ->
+        error
     end
   end
 
@@ -70,12 +78,15 @@ defmodule Hackathon.Adapters.Persistencia.RepositorioParticipantes do
   defp serializar(participante) do
     habilidades_str = Enum.join(participante.habilidades, ",")
     equipo_id_str = participante.equipo_id || ""
-    "#{participante.id}|#{participante.nombre}|#{participante.correo}|#{habilidades_str}|#{equipo_id_str}"
+    password_hash_str = participante.password_hash || ""
+
+    "#{participante.id}|#{participante.nombre}|#{participante.correo}|#{habilidades_str}|#{equipo_id_str}|#{password_hash_str}"
   end
 
   defp deserializar(linea) do
     case String.split(linea, "|") do
       [id, nombre, correo, habilidades_str, equipo_id_str] ->
+        # Versión antigua sin password_hash
         habilidades = if habilidades_str == "", do: [], else: String.split(habilidades_str, ",")
         equipo_id = if equipo_id_str == "", do: nil, else: equipo_id_str
 
@@ -84,9 +95,27 @@ defmodule Hackathon.Adapters.Persistencia.RepositorioParticipantes do
           nombre: nombre,
           correo: correo,
           habilidades: habilidades,
-          equipo_id: equipo_id
+          equipo_id: equipo_id,
+          password_hash: nil
         }
-      _ -> nil
+
+      [id, nombre, correo, habilidades_str, equipo_id_str, password_hash_str] ->
+        # Versión nueva con password_hash
+        habilidades = if habilidades_str == "", do: [], else: String.split(habilidades_str, ",")
+        equipo_id = if equipo_id_str == "", do: nil, else: equipo_id_str
+        password_hash = if password_hash_str == "", do: nil, else: password_hash_str
+
+        %Hackathon.Domain.Participante{
+          id: id,
+          nombre: nombre,
+          correo: correo,
+          habilidades: habilidades,
+          equipo_id: equipo_id,
+          password_hash: password_hash
+        }
+
+      _ ->
+        nil
     end
   end
 end
