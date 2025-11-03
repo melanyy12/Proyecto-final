@@ -1,0 +1,9 @@
+﻿_build/
+deps/
+*.beam
+*.ez
+.elixir_ls/
+erl_crash.dump
+hackathon-*.tar
+.fetch
+data/*.txt
