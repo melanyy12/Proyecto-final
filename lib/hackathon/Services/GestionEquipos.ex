@@ -72,6 +72,26 @@ defmodule Hackathon.Services.GestionEquipos do
       error -> error
     end
   end
+  @doc """
+Elimina un equipo
+"""
+def eliminar_equipo(equipo_id) do
+  case listar_equipos() do
+    {:ok, equipos} ->
+      equipos_filtrados = Enum.reject(equipos, fn e -> e.id == equipo_id end)
+      reescribir_archivo_equipos(equipos_filtrados)
+      {:ok, :eliminado}
+    error -> error
+  end
+end
+
+defp reescribir_archivo_equipos(equipos) do
+  File.rm("data/equipos.txt")
+  Enum.each(equipos, fn e ->
+    RepositorioEquipos.guardar(e)
+  end)
+  :ok
+end
 
   @doc """
   Obtiene un equipo por su ID

@@ -28,7 +28,27 @@ defmodule Hackathon.Services.GestionProyectos do
         {:error, razon}
     end
   end
+@doc """
+Elimina un proyecto
+"""
+def eliminar_proyecto(proyecto_id) do
+  case listar_proyectos() do
+    {:ok, proyectos} ->
+      proyectos_filtrados = Enum.reject(proyectos, fn p -> p.id == proyecto_id end)
+      reescribir_archivo_proyectos(proyectos_filtrados)
+      {:ok, :eliminado}
+    error -> error
+  end
+end
 
+defp reescribir_archivo_proyectos(proyectos) do
+  alias Hackathon.Adapters.Persistencia.RepositorioProyectos
+  File.rm("data/proyectos.txt")
+  Enum.each(proyectos, fn p ->
+    RepositorioProyectos.guardar(p)
+  end)
+  :ok
+end
   @doc """
   Agrega un avance a un proyecto
   """

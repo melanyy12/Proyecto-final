@@ -87,6 +87,28 @@ defmodule Hackathon.Services.GestionMentores do
     end
   end
 
+  @doc """
+Elimina un mentor
+"""
+def eliminar_mentor(mentor_id) do
+  case listar_mentores() do
+    {:ok, mentores} ->
+      mentores_filtrados = Enum.reject(mentores, fn m -> m.id == mentor_id end)
+      reescribir_archivo_mentores(mentores_filtrados)
+      {:ok, :eliminado}
+    error -> error
+  end
+end
+
+defp reescribir_archivo_mentores(mentores) do
+  alias Hackathon.Adapters.Persistencia.RepositorioMentores
+  File.rm("data/mentores.txt")
+  Enum.each(mentores, fn m ->
+    RepositorioMentores.guardar(m)
+  end)
+  :ok
+end
+
   # Funciones privadas
 
   defp generar_id do

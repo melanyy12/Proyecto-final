@@ -1,6 +1,6 @@
 # lib/hackathon/adapters/cli/comandos.ex
 defmodule Hackathon.Adapters.CLI.Comandos do
-  alias Hackathon.Services.{GestionEquipos, GestionProyectos, SistemaChat}
+  alias Hackathon.Services.GestionEquipos
 
   def listar_equipos do
     case GestionEquipos.listar_equipos() do
@@ -10,7 +10,7 @@ defmodule Hackathon.Adapters.CLI.Comandos do
       {:ok, equipos} ->
         IO.puts("\n === EQUIPOS REGISTRADOS ===\n")
         Enum.each(equipos, fn equipo ->
-          IO.puts("  🔹 #{equipo.nombre}")
+          IO.puts("  #{equipo.nombre}")
           IO.puts("     Tema: #{equipo.tema}")
           IO.puts("     Miembros: #{length(equipo.miembros)}")
           IO.puts("")

@@ -6,6 +6,8 @@ defmodule Hackathon.CLI do
   alias Hackathon.Services.{GestionEquipos, GestionProyectos, GestionParticipantes, GestionMentores, SistemaChat}
   alias Hackathon.Semilla
 
+  @password_acceso "ingreso123"
+
   def main(_args \\ []) do
     mostrar_banner()
     cargar_datos_iniciales()
@@ -43,17 +45,22 @@ defmodule Hackathon.CLI do
       "2" -> ver_proyectos() |> then(fn _ -> loop_menu() end)
       "3" -> ver_proyecto_por_equipo() |> then(fn _ -> loop_menu() end)
       "4" -> ver_proyectos_por_estado() |> then(fn _ -> loop_menu() end)
-      "5" -> ver_participantes() |> then(fn _ -> loop_menu() end)
-      "6" -> ver_mentores() |> then(fn _ -> loop_menu() end)
+      "5" -> ver_participantes_protegido() |> then(fn _ -> loop_menu() end)
+      "6" -> ver_mentores_protegido() |> then(fn _ -> loop_menu() end)
       "7" -> registrar_participante() |> then(fn _ -> loop_menu() end)
       "8" -> unirse_equipo() |> then(fn _ -> loop_menu() end)
       "9" -> crear_equipo() |> then(fn _ -> loop_menu() end)
       "10" -> crear_proyecto() |> then(fn _ -> loop_menu() end)
-      "11" -> agregar_avance() |> then(fn _ -> loop_menu() end)
-      "12" -> ver_chat_equipo() |> then(fn _ -> loop_menu() end)
-      "13" -> enviar_mensaje_chat() |> then(fn _ -> loop_menu() end)
-      "14" -> mostrar_ayuda() |> then(fn _ -> loop_menu() end)
-      "15" -> recargar_datos() |> then(fn _ -> loop_menu() end)
+      "11" -> registrar_mentor() |> then(fn _ -> loop_menu() end)
+      "12" -> agregar_avance() |> then(fn _ -> loop_menu() end)
+      "13" -> ver_chat_equipo() |> then(fn _ -> loop_menu() end)
+      "14" -> enviar_mensaje_chat() |> then(fn _ -> loop_menu() end)
+      "15" -> eliminar_participante() |> then(fn _ -> loop_menu() end)
+      "16" -> eliminar_mentor() |> then(fn _ -> loop_menu() end)
+      "17" -> eliminar_equipo() |> then(fn _ -> loop_menu() end)
+      "18" -> eliminar_proyecto() |> then(fn _ -> loop_menu() end)
+      "19" -> mostrar_ayuda() |> then(fn _ -> loop_menu() end)
+      "20" -> recargar_datos() |> then(fn _ -> loop_menu() end)
       "0" -> salir()
       _ -> IO.puts("\nX Opcion invalida. Intente de nuevo.\n") |> then(fn _ -> loop_menu() end)
     end
@@ -68,23 +75,30 @@ defmodule Hackathon.CLI do
     IO.puts("    2. Ver todos los proyectos")
     IO.puts("    3. Buscar proyecto por equipo")
     IO.puts("    4. Filtrar proyectos por estado")
-    IO.puts("    5. Ver participantes")
-    IO.puts("    6. Ver mentores")
+    IO.puts("    5. Ver participantes (requiere acceso)")
+    IO.puts("    6. Ver mentores (requiere acceso)")
     IO.puts("")
     IO.puts("  REGISTROS:")
     IO.puts("    7. Registrar nuevo participante")
     IO.puts("    8. Unirse a un equipo")
     IO.puts("    9. Crear nuevo equipo")
     IO.puts("   10. Crear nuevo proyecto")
+    IO.puts("   11. Registrar nuevo mentor")
     IO.puts("")
     IO.puts("  COLABORACION:")
-    IO.puts("   11. Agregar avance a proyecto")
-    IO.puts("   12. Ver chat de equipo")
-    IO.puts("   13. Enviar mensaje a equipo")
+    IO.puts("   12. Agregar avance a proyecto")
+    IO.puts("   13. Ver chat de equipo")
+    IO.puts("   14. Enviar mensaje a equipo")
+    IO.puts("")
+    IO.puts("  ELIMINACION:")
+    IO.puts("   15. Eliminar participante (requiere acceso)")
+    IO.puts("   16. Eliminar mentor (requiere acceso)")
+    IO.puts("   17. Eliminar equipo")
+    IO.puts("   18. Eliminar proyecto")
     IO.puts("")
     IO.puts("  SISTEMA:")
-    IO.puts("   14. Ayuda (/help)")
-    IO.puts("   15. Recargar datos")
+    IO.puts("   19. Ayuda (/help)")
+    IO.puts("   20. Recargar datos")
     IO.puts("    0. Salir")
     IO.puts("")
     IO.puts("===============================================")
@@ -93,6 +107,35 @@ defmodule Hackathon.CLI do
   defp obtener_opcion do
     IO.gets("\nSeleccione una opcion: ")
     |> String.trim()
+  end
+
+  # ========== FUNCIONES DE SEGURIDAD ==========
+
+  defp verificar_acceso_admin do
+    IO.puts("\n=== ACCESO RESTRINGIDO ===")
+    IO.puts("Ingrese la contraseña de acceso:")
+    password = IO.gets("> ") |> String.trim()
+
+    if password == @password_acceso do
+      {:ok, :autorizado}
+    else
+      IO.puts("\nX Contraseña incorrecta\n")
+      {:error, :no_autorizado}
+    end
+  end
+
+  defp ver_participantes_protegido do
+    case verificar_acceso_admin() do
+      {:ok, :autorizado} -> ver_participantes()
+      {:error, :no_autorizado} -> pausar()
+    end
+  end
+
+  defp ver_mentores_protegido do
+    case verificar_acceso_admin() do
+      {:ok, :autorizado} -> ver_mentores()
+      {:error, :no_autorizado} -> pausar()
+    end
   end
 
   # ========== CONSULTAS ==========
@@ -316,15 +359,47 @@ defmodule Hackathon.CLI do
       |> Enum.map(&String.trim/1)
     end
 
+    IO.puts("\nCree una contraseña (minimo 6 caracteres):")
+    password = IO.gets("> ") |> String.trim()
+
     case GestionParticipantes.registrar_participante(%{
       nombre: nombre,
       correo: correo,
-      habilidades: habilidades
+      habilidades: habilidades,
+      password: password
     }) do
       {:ok, participante} ->
         IO.puts("\n+ Participante '#{participante.nombre}' registrado exitosamente!")
         IO.puts("  ID: #{participante.id}")
         IO.puts("  Correo: #{participante.correo}\n")
+      {:error, razon} ->
+        IO.puts("\nX Error: #{razon}\n")
+    end
+
+    pausar()
+  end
+
+  defp registrar_mentor do
+    IO.puts("\n=== REGISTRAR NUEVO MENTOR ===\n")
+
+    nombre = IO.gets("Nombre completo: ") |> String.trim()
+    correo = IO.gets("Correo electronico: ") |> String.trim()
+    especialidad = IO.gets("Especialidad: ") |> String.trim()
+
+    IO.puts("\nCree una contraseña (minimo 6 caracteres):")
+    password = IO.gets("> ") |> String.trim()
+
+    case GestionMentores.registrar_mentor(%{
+      nombre: nombre,
+      correo: correo,
+      especialidad: especialidad,
+      password: password
+    }) do
+      {:ok, mentor} ->
+        IO.puts("\n+ Mentor '#{mentor.nombre}' registrado exitosamente!")
+        IO.puts("  ID: #{mentor.id}")
+        IO.puts("  Correo: #{mentor.correo}")
+        IO.puts("  Especialidad: #{mentor.especialidad}\n")
       {:error, razon} ->
         IO.puts("\nX Error: #{razon}\n")
     end
@@ -350,7 +425,7 @@ defmodule Hackathon.CLI do
         else
           # Mostrar equipos disponibles
           case GestionEquipos.listar_equipos_activos() do
-            {:ok, equipos} when length(equipos) > 0 ->
+            {:ok, [_|_] = equipos} ->
               IO.puts("\nEquipos disponibles:\n")
 
               equipos
@@ -446,7 +521,7 @@ defmodule Hackathon.CLI do
     IO.puts("\n=== CREAR NUEVO PROYECTO ===\n")
 
     case GestionEquipos.listar_equipos() do
-      {:ok, equipos} when length(equipos) > 0 ->
+      {:ok, [_|_] = equipos} ->
         IO.puts("Equipos disponibles:\n")
 
         equipos
@@ -518,7 +593,7 @@ defmodule Hackathon.CLI do
     IO.puts("\n=== AGREGAR AVANCE A PROYECTO ===\n")
 
     case GestionProyectos.listar_proyectos() do
-      {:ok, proyectos} when length(proyectos) > 0 ->
+      {:ok, [_|_] = proyectos} ->
         proyectos
         |> Enum.with_index(1)
         |> Enum.each(fn {proyecto, index} ->
@@ -560,7 +635,7 @@ defmodule Hackathon.CLI do
     IO.puts("\n=== CHAT DE EQUIPO ===\n")
 
     case GestionEquipos.listar_equipos() do
-      {:ok, equipos} when length(equipos) > 0 ->
+      {:ok, [_|_] = equipos} ->
         equipos
         |> Enum.with_index(1)
         |> Enum.each(fn {equipo, index} ->
@@ -652,6 +727,204 @@ defmodule Hackathon.CLI do
     pausar()
   end
 
+  # ========== ELIMINACION ==========
+
+  defp eliminar_participante do
+    case verificar_acceso_admin() do
+      {:ok, :autorizado} ->
+        IO.puts("\n=== ELIMINAR PARTICIPANTE ===\n")
+
+        case GestionParticipantes.listar_participantes() do
+          {:ok, [_|_] = participantes} ->
+            participantes
+            |> Enum.with_index(1)
+            |> Enum.each(fn {p, index} ->
+              IO.puts("  #{index}. #{p.nombre} (#{p.correo})")
+            end)
+
+            IO.puts("\nSeleccione el numero del participante a eliminar:")
+            opcion = IO.gets("> ") |> String.trim()
+
+            case Integer.parse(opcion) do
+              {index, _} when index > 0 and index <= length(participantes) ->
+                participante = Enum.at(participantes, index - 1)
+
+                IO.puts("\nEsta seguro de eliminar a '#{participante.nombre}'? (si/no)")
+                confirmacion = IO.gets("> ") |> String.trim() |> String.downcase()
+
+                if confirmacion == "si" do
+                  case GestionParticipantes.eliminar_participante(participante.id) do
+                    {:ok, :eliminado} ->
+                      IO.puts("\n+ Participante eliminado exitosamente\n")
+                    {:error, razon} ->
+                      IO.puts("\nX Error: #{razon}\n")
+                  end
+                else
+                  IO.puts("\nOperacion cancelada\n")
+                end
+
+              _ ->
+                IO.puts("\nOpcion invalida\n")
+            end
+
+          {:ok, []} ->
+            IO.puts("No hay participantes registrados\n")
+
+          _ ->
+            IO.puts("Error al listar participantes\n")
+        end
+
+      {:error, :no_autorizado} ->
+        :ok
+    end
+
+    pausar()
+  end
+
+  defp eliminar_mentor do
+    case verificar_acceso_admin() do
+      {:ok, :autorizado} ->
+        IO.puts("\n=== ELIMINAR MENTOR ===\n")
+
+        case GestionMentores.listar_mentores() do
+         {:ok, [_|_] = mentores} ->
+            mentores
+            |> Enum.with_index(1)
+            |> Enum.each(fn {m, index} ->
+              IO.puts("  #{index}. #{m.nombre} (#{m.correo})")
+            end)
+
+            IO.puts("\nSeleccione el numero del mentor a eliminar:")
+            opcion = IO.gets("> ") |> String.trim()
+
+            case Integer.parse(opcion) do
+              {index, _} when index > 0 and index <= length(mentores) ->
+                mentor = Enum.at(mentores, index - 1)
+
+                IO.puts("\nEsta seguro de eliminar a '#{mentor.nombre}'? (si/no)")
+                confirmacion = IO.gets("> ") |> String.trim() |> String.downcase()
+
+                if confirmacion == "si" do
+                  case GestionMentores.eliminar_mentor(mentor.id) do
+                    {:ok, :eliminado} ->
+                      IO.puts("\n+ Mentor eliminado exitosamente\n")
+                    {:error, razon} ->
+                      IO.puts("\nX Error: #{razon}\n")
+                  end
+                else
+                  IO.puts("\nOperacion cancelada\n")
+                end
+
+              _ ->
+                IO.puts("\nOpcion invalida\n")
+            end
+
+          {:ok, []} ->
+            IO.puts("No hay mentores registrados\n")
+
+          _ ->
+            IO.puts("Error al listar mentores\n")
+        end
+
+      {:error, :no_autorizado} ->
+        :ok
+    end
+
+    pausar()
+  end
+
+  defp eliminar_equipo do
+    IO.puts("\n=== ELIMINAR EQUIPO ===\n")
+
+    case GestionEquipos.listar_equipos() do
+      {:ok, [_|_] = equipos} ->
+        equipos
+        |> Enum.with_index(1)
+        |> Enum.each(fn {e, index} ->
+          IO.puts("  #{index}. #{e.nombre}")
+        end)
+
+        IO.puts("\nSeleccione el numero del equipo a eliminar:")
+        opcion = IO.gets("> ") |> String.trim()
+
+        case Integer.parse(opcion) do
+          {index, _} when index > 0 and index <= length(equipos) ->
+            equipo = Enum.at(equipos, index - 1)
+
+            IO.puts("\nEsta seguro de eliminar el equipo '#{equipo.nombre}'? (si/no)")
+            confirmacion = IO.gets("> ") |> String.trim() |> String.downcase()
+
+            if confirmacion == "si" do
+              case GestionEquipos.eliminar_equipo(equipo.id) do
+                {:ok, :eliminado} ->
+                  IO.puts("\n+ Equipo eliminado exitosamente\n")
+                {:error, razon} ->
+                  IO.puts("\nX Error: #{razon}\n")
+              end
+            else
+              IO.puts("\nOperacion cancelada\n")
+            end
+
+          _ ->
+            IO.puts("\nOpcion invalida\n")
+        end
+
+      {:ok, []} ->
+        IO.puts("No hay equipos registrados\n")
+
+      _ ->
+        IO.puts("Error al listar equipos\n")
+    end
+
+    pausar()
+  end
+
+  defp eliminar_proyecto do
+    IO.puts("\n=== ELIMINAR PROYECTO ===\n")
+
+    case GestionProyectos.listar_proyectos() do
+      {:ok, [_|_] = proyectos} ->
+        proyectos
+        |> Enum.with_index(1)
+        |> Enum.each(fn {p, index} ->
+          IO.puts("  #{index}. #{p.nombre} [#{p.estado}]")
+        end)
+
+        IO.puts("\nSeleccione el numero del proyecto a eliminar:")
+        opcion = IO.gets("> ") |> String.trim()
+
+        case Integer.parse(opcion) do
+          {index, _} when index > 0 and index <= length(proyectos) ->
+            proyecto = Enum.at(proyectos, index - 1)
+
+            IO.puts("\nEsta seguro de eliminar el proyecto '#{proyecto.nombre}'? (si/no)")
+            confirmacion = IO.gets("> ") |> String.trim() |> String.downcase()
+
+            if confirmacion == "si" do
+              case GestionProyectos.eliminar_proyecto(proyecto.id) do
+                {:ok, :eliminado} ->
+                  IO.puts("\n+ Proyecto eliminado exitosamente\n")
+                {:error, razon} ->
+                  IO.puts("\nX Error: #{razon}\n")
+              end
+            else
+              IO.puts("\nOperacion cancelada\n")
+            end
+
+          _ ->
+            IO.puts("\nOpcion invalida\n")
+        end
+
+      {:ok, []} ->
+        IO.puts("No hay proyectos registrados\n")
+
+      _ ->
+        IO.puts("Error al listar proyectos\n")
+    end
+
+    pausar()
+  end
+
   # ========== SISTEMA ==========
 
   defp mostrar_ayuda do
@@ -673,6 +946,10 @@ defmodule Hackathon.CLI do
     IO.puts("  2. Ver equipos disponibles (opcion 1)")
     IO.puts("  3. Unirse a un equipo (opcion 8)")
     IO.puts("  4. Colaborar en proyectos y chat")
+    IO.puts("")
+    IO.puts("  ACCESO ADMINISTRATIVO:")
+    IO.puts("  - Ver/eliminar participantes y mentores")
+    IO.puts("  - Contraseña: #{@password_acceso}")
     IO.puts("")
     IO.puts("===============================================")
     IO.puts("")

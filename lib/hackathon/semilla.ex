@@ -9,53 +9,53 @@ defmodule Hackathon.Semilla do
   @password_default "password123"
 
   def cargar_datos do
-    IO.puts("\n🌱 Cargando datos iniciales de la Hackathon...")
+    IO.puts("\n Cargando datos iniciales de la Hackathon...")
 
     # Limpiar datos anteriores
     limpiar_datos()
 
     # Cargar participantes
     participantes = cargar_participantes()
-    IO.puts("✅ #{length(participantes)} participantes cargados")
+    IO.puts(" #{length(participantes)} participantes cargados")
 
     # Cargar mentores
     mentores = cargar_mentores()
-    IO.puts("✅ #{length(mentores)} mentores cargados")
+    IO.puts(" #{length(mentores)} mentores cargados")
 
     # Cargar equipos
     equipos = cargar_equipos()
-    IO.puts("✅ #{length(equipos)} equipos cargados")
+    IO.puts(" #{length(equipos)} equipos cargados")
 
     # Asignar participantes a equipos
     asignar_participantes_a_equipos(participantes, equipos)
-    IO.puts("✅ Participantes asignados a equipos")
+    IO.puts(" Participantes asignados a equipos")
 
     # Cargar proyectos
     proyectos = cargar_proyectos(equipos)
-    IO.puts("✅ #{length(proyectos)} proyectos cargados")
+    IO.puts(" #{length(proyectos)} proyectos cargados")
 
     # Agregar avances
     agregar_avances(proyectos)
-    IO.puts("✅ Avances agregados a los proyectos")
+    IO.puts(" Avances agregados a los proyectos")
 
     # Agregar retroalimentación
     agregar_retroalimentacion(proyectos, mentores)
-    IO.puts("✅ Retroalimentacion de mentores agregada")
+    IO.puts(" Retroalimentacion de mentores agregada")
 
-    IO.puts("\n📋 CREDENCIALES DE ACCESO:")
+    IO.puts("\n CREDENCIALES DE ACCESO:")
     IO.puts("====================================")
     IO.puts("Contraseña para TODOS los usuarios: #{@password_default}")
     IO.puts("\nPARTICIPANTES:")
     Enum.each(participantes, fn p ->
-      IO.puts("  📧 #{p.correo}")
+      IO.puts("   #{p.correo}")
     end)
     IO.puts("\nMENTORES:")
     Enum.each(mentores, fn m ->
-      IO.puts("  📧 #{m.correo}")
+      IO.puts("   #{m.correo}")
     end)
     IO.puts("====================================\n")
 
-    IO.puts("✨ Datos cargados exitosamente!\n")
+    IO.puts(" Datos cargados exitosamente!\n")
 
     {:ok, %{equipos: equipos, proyectos: proyectos, participantes: participantes, mentores: mentores}}
   end

@@ -103,6 +103,30 @@ defmodule Hackathon.Services.GestionParticipantes do
     end
   end
 
+  @doc """
+Elimina un participante
+"""
+def eliminar_participante(participante_id) do
+  case listar_participantes() do
+    {:ok, participantes} ->
+      participantes_filtrados = Enum.reject(participantes, fn p -> p.id == participante_id end)
+      reescribir_archivo_participantes(participantes_filtrados)
+      {:ok, :eliminado}
+    error -> error
+  end
+end
+
+defp reescribir_archivo_participantes(participantes) do
+  alias Hackathon.Adapters.Persistencia.RepositorioParticipantes
+  # Limpiar archivo
+  File.rm("data/participantes.txt")
+  # Guardar todos nuevamente
+  Enum.each(participantes, fn p ->
+    RepositorioParticipantes.guardar(p)
+  end)
+  :ok
+end
+
   # Funciones privadas
 
   defp generar_id do
