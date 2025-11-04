@@ -27,82 +27,86 @@ defmodule Hackathon.CLI do
   end
 
   defp cargar_datos_iniciales do
-    IO.puts("Cargando datos de la hackathon...")
-    {:ok, _} = Semilla.cargar_datos()
-    IO.puts("Datos cargados exitosamente\n")
-    :timer.sleep(1000)
-  end
+  IO.puts("Cargando datos de la hackathon...")
+  {:ok, _} = Semilla.cargar_datos()  # <-- CAMBIO AQUÍ (quitar _iniciales)
+  IO.puts("Datos cargados exitosamente\n")
+  :timer.sleep(1000)
+end
 
   defp menu_principal do
     loop_menu()
   end
 
   defp loop_menu do
-    mostrar_opciones()
+  mostrar_opciones()
 
-    case obtener_opcion() do
-      "1" -> ver_equipos() |> then(fn _ -> loop_menu() end)
-      "2" -> ver_proyectos() |> then(fn _ -> loop_menu() end)
-      "3" -> ver_proyecto_por_equipo() |> then(fn _ -> loop_menu() end)
-      "4" -> ver_proyectos_por_estado() |> then(fn _ -> loop_menu() end)
-      "5" -> ver_participantes_protegido() |> then(fn _ -> loop_menu() end)
-      "6" -> ver_mentores_protegido() |> then(fn _ -> loop_menu() end)
-      "7" -> registrar_participante() |> then(fn _ -> loop_menu() end)
-      "8" -> unirse_equipo() |> then(fn _ -> loop_menu() end)
-      "9" -> crear_equipo() |> then(fn _ -> loop_menu() end)
-      "10" -> crear_proyecto() |> then(fn _ -> loop_menu() end)
-      "11" -> registrar_mentor() |> then(fn _ -> loop_menu() end)
-      "12" -> agregar_avance() |> then(fn _ -> loop_menu() end)
-      "13" -> ver_chat_equipo() |> then(fn _ -> loop_menu() end)
-      "14" -> enviar_mensaje_chat() |> then(fn _ -> loop_menu() end)
-      "15" -> eliminar_participante() |> then(fn _ -> loop_menu() end)
-      "16" -> eliminar_mentor() |> then(fn _ -> loop_menu() end)
-      "17" -> eliminar_equipo() |> then(fn _ -> loop_menu() end)
-      "18" -> eliminar_proyecto() |> then(fn _ -> loop_menu() end)
-      "19" -> mostrar_ayuda() |> then(fn _ -> loop_menu() end)
-      "20" -> recargar_datos() |> then(fn _ -> loop_menu() end)
-      "0" -> salir()
-      _ -> IO.puts("\nX Opcion invalida. Intente de nuevo.\n") |> then(fn _ -> loop_menu() end)
-    end
+  case obtener_opcion() do
+    "1" -> ver_equipos() |> then(fn _ -> loop_menu() end)
+    "2" -> ver_proyectos() |> then(fn _ -> loop_menu() end)
+    "3" -> ver_proyecto_por_equipo() |> then(fn _ -> loop_menu() end)
+    "4" -> ver_proyectos_por_estado() |> then(fn _ -> loop_menu() end)
+    "5" -> ver_participantes_protegido() |> then(fn _ -> loop_menu() end)
+    "6" -> ver_mentores_protegido() |> then(fn _ -> loop_menu() end)
+    "7" -> registrar_participante() |> then(fn _ -> loop_menu() end)
+    "8" -> unirse_equipo() |> then(fn _ -> loop_menu() end)
+    "9" -> crear_equipo() |> then(fn _ -> loop_menu() end)
+    "10" -> crear_proyecto() |> then(fn _ -> loop_menu() end)
+    "11" -> registrar_mentor() |> then(fn _ -> loop_menu() end)
+    "12" -> agregar_avance() |> then(fn _ -> loop_menu() end)
+    "13" -> ver_chat_equipo() |> then(fn _ -> loop_menu() end)
+    "14" -> enviar_mensaje_chat() |> then(fn _ -> loop_menu() end)
+    "15" -> asignar_mentor_equipo() |> then(fn _ -> loop_menu() end)
+    "16" -> cambiar_estado_proyecto() |> then(fn _ -> loop_menu() end)
+    "17" -> eliminar_participante() |> then(fn _ -> loop_menu() end)
+    "18" -> eliminar_mentor() |> then(fn _ -> loop_menu() end)
+    "19" -> eliminar_equipo() |> then(fn _ -> loop_menu() end)
+    "20" -> eliminar_proyecto() |> then(fn _ -> loop_menu() end)
+    "21" -> mostrar_ayuda() |> then(fn _ -> loop_menu() end)
+    "22" -> recargar_datos() |> then(fn _ -> loop_menu() end)
+    "0" -> salir()
+    _ -> IO.puts("\nX Opcion invalida. Intente de nuevo.\n") |> then(fn _ -> loop_menu() end)
   end
+end
 
   defp mostrar_opciones do
-    IO.puts("\n")
-    IO.puts("=============== MENU PRINCIPAL ================")
-    IO.puts("")
-    IO.puts("  CONSULTAS:")
-    IO.puts("    1. Ver todos los equipos")
-    IO.puts("    2. Ver todos los proyectos")
-    IO.puts("    3. Buscar proyecto por equipo")
-    IO.puts("    4. Filtrar proyectos por estado")
-    IO.puts("    5. Ver participantes (requiere acceso)")
-    IO.puts("    6. Ver mentores (requiere acceso)")
-    IO.puts("")
-    IO.puts("  REGISTROS:")
-    IO.puts("    7. Registrar nuevo participante")
-    IO.puts("    8. Unirse a un equipo")
-    IO.puts("    9. Crear nuevo equipo")
-    IO.puts("   10. Crear nuevo proyecto")
-    IO.puts("   11. Registrar nuevo mentor")
-    IO.puts("")
-    IO.puts("  COLABORACION:")
-    IO.puts("   12. Agregar avance a proyecto")
-    IO.puts("   13. Ver chat de equipo")
-    IO.puts("   14. Enviar mensaje a equipo")
-    IO.puts("")
-    IO.puts("  ELIMINACION:")
-    IO.puts("   15. Eliminar participante (requiere acceso)")
-    IO.puts("   16. Eliminar mentor (requiere acceso)")
-    IO.puts("   17. Eliminar equipo")
-    IO.puts("   18. Eliminar proyecto")
-    IO.puts("")
-    IO.puts("  SISTEMA:")
-    IO.puts("   19. Ayuda (/help)")
-    IO.puts("   20. Recargar datos")
-    IO.puts("    0. Salir")
-    IO.puts("")
-    IO.puts("===============================================")
-  end
+  IO.puts("\n")
+  IO.puts("=============== MENU PRINCIPAL ================")
+  IO.puts("")
+  IO.puts("  CONSULTAS:")
+  IO.puts("    1. Ver todos los equipos")
+  IO.puts("    2. Ver todos los proyectos")
+  IO.puts("    3. Buscar proyecto por equipo")
+  IO.puts("    4. Filtrar proyectos por estado")
+  IO.puts("    5. Ver participantes (requiere acceso)")
+  IO.puts("    6. Ver mentores (requiere acceso)")
+  IO.puts("")
+  IO.puts("  REGISTROS:")
+  IO.puts("    7. Registrar nuevo participante")
+  IO.puts("    8. Unirse a un equipo")
+  IO.puts("    9. Crear nuevo equipo")
+  IO.puts("   10. Crear nuevo proyecto")
+  IO.puts("   11. Registrar nuevo mentor")
+  IO.puts("")
+  IO.puts("  COLABORACION:")
+  IO.puts("   12. Agregar avance a proyecto")
+  IO.puts("   13. Ver chat de equipo")
+  IO.puts("   14. Enviar mensaje a equipo")
+  IO.puts("   15. Asignar mentor a equipo")
+  IO.puts("   16. Cambiar estado de proyecto")
+  IO.puts("")
+  IO.puts("  ELIMINACION:")
+  IO.puts("   17. Eliminar participante (requiere acceso)")
+  IO.puts("   18. Eliminar mentor (requiere acceso)")
+  IO.puts("   19. Eliminar equipo")
+  IO.puts("   20. Eliminar proyecto")
+  IO.puts("")
+  IO.puts("  SISTEMA:")
+  IO.puts("   21. Ayuda (/help)")
+  IO.puts("   22. Recargar datos")
+  IO.puts("    0. Salir")
+  IO.puts("")
+  IO.puts("===============================================")
+end
 
   defp obtener_opcion do
     IO.gets("\nSeleccione una opcion: ")
@@ -309,35 +313,49 @@ defmodule Hackathon.CLI do
     pausar()
   end
 
-  defp ver_mentores do
-    IO.puts("\n")
-    IO.puts("===============================================")
-    IO.puts("            MENTORES REGISTRADOS              ")
-    IO.puts("===============================================")
-    IO.puts("")
+defp ver_mentores do
+  IO.puts("\n")
+  IO.puts("===============================================")
+  IO.puts("            MENTORES REGISTRADOS              ")
+  IO.puts("===============================================")
+  IO.puts("")
 
-    case GestionMentores.listar_mentores() do
-      {:ok, []} ->
-        IO.puts("  No hay mentores registrados.\n")
+  case GestionMentores.listar_mentores() do
+    {:ok, []} ->
+      IO.puts("  No hay mentores registrados.\n")
 
-      {:ok, mentores} ->
-        mentores
-        |> Enum.with_index(1)
-        |> Enum.each(fn {mentor, index} ->
-          IO.puts("  #{index}. #{mentor.nombre}")
-          IO.puts("     Especialidad: #{mentor.especialidad}")
-          IO.puts("     Email: #{mentor.correo}")
-          IO.puts("     Equipos asignados: #{length(mentor.equipos_asignados)}/#{mentor.max_equipos}")
-          IO.puts("     Disponible: #{if mentor.disponible, do: "Si", else: "No"}")
-          IO.puts("")
-        end)
+    {:ok, mentores} ->
+      mentores
+      |> Enum.with_index(1)
+      |> Enum.each(fn {mentor, index} ->
+        IO.puts("  #{index}. #{mentor.nombre}")
+        IO.puts("     Especialidad: #{mentor.especialidad}")
+        IO.puts("     Email: #{mentor.correo}")
+        IO.puts("     Equipos asignados: #{length(mentor.equipos_asignados)}/#{mentor.max_equipos}")
 
-      _ ->
-        IO.puts("  Error al listar mentores\n")
-    end
+        # Mostrar nombres de equipos asignados
+        if length(mentor.equipos_asignados) > 0 do
+          IO.puts("     Equipos:")
+          Enum.each(mentor.equipos_asignados, fn equipo_id ->
+            case GestionEquipos.obtener_equipo(equipo_id) do
+              {:ok, equipo} ->
+                IO.puts("       • #{equipo.nombre}")
+              _ ->
+                IO.puts("       • ID: #{equipo_id}")
+            end
+          end)
+        end
 
-    pausar()
+        IO.puts("     Disponible: #{if mentor.disponible, do: "Si", else: "No"}")
+        IO.puts("")
+      end)
+
+    _ ->
+      IO.puts("  Error al listar mentores\n")
   end
+
+  pausar()
+end
 
   # ========== REGISTROS ==========
 
@@ -927,55 +945,285 @@ defmodule Hackathon.CLI do
 
   # ========== SISTEMA ==========
 
-  defp mostrar_ayuda do
-    IO.puts("\n")
-    IO.puts("===============================================")
-    IO.puts("            AYUDA - COMANDOS                  ")
-    IO.puts("===============================================")
-    IO.puts("")
-    IO.puts("  COMANDOS DISPONIBLES:")
-    IO.puts("")
-    IO.puts("  /teams    - Listar todos los equipos")
-    IO.puts("  /projects - Listar todos los proyectos")
-    IO.puts("  /join     - Unirse a un equipo")
-    IO.puts("  /chat     - Ver chat de equipo")
-    IO.puts("  /help     - Mostrar esta ayuda")
-    IO.puts("")
-    IO.puts("  FLUJO RECOMENDADO:")
-    IO.puts("  1. Registrarse como participante (opcion 7)")
-    IO.puts("  2. Ver equipos disponibles (opcion 1)")
-    IO.puts("  3. Unirse a un equipo (opcion 8)")
-    IO.puts("  4. Colaborar en proyectos y chat")
-    IO.puts("")
-    IO.puts("  ACCESO ADMINISTRATIVO:")
-    IO.puts("  - Ver/eliminar participantes y mentores")
-    IO.puts("  - Contraseña: #{@password_acceso}")
-    IO.puts("")
-    IO.puts("===============================================")
-    IO.puts("")
 
-    pausar()
+defp asignar_mentor_equipo do
+  IO.puts("\n=== ASIGNAR MENTOR A EQUIPO ===\n")
+
+  # Listar mentores disponibles
+  case GestionMentores.listar_mentores() do
+    {:ok, [_|_] = mentores} ->
+      IO.puts("Mentores disponibles:\n")
+
+      mentores
+      |> Enum.with_index(1)
+      |> Enum.each(fn {mentor, index} ->
+        capacidad = mentor.max_equipos - length(mentor.equipos_asignados)
+        estado = if capacidad > 0, do: "#{capacidad} espacios disponibles", else: "LLENO"
+        IO.puts("  #{index}. #{mentor.nombre} - #{mentor.especialidad} (#{estado})")
+      end)
+
+      IO.puts("\nSeleccione el numero del mentor:")
+      mentor_opcion = IO.gets("> ") |> String.trim()
+
+      case Integer.parse(mentor_opcion) do
+        {index, _} when index > 0 and index <= length(mentores) ->
+          mentor = Enum.at(mentores, index - 1)
+
+          # Verificar si tiene capacidad
+          if length(mentor.equipos_asignados) >= mentor.max_equipos do
+            IO.puts("\nX Este mentor ya tiene el maximo de equipos asignados (#{mentor.max_equipos}).\n")
+          else
+            # Listar equipos
+            case GestionEquipos.listar_equipos() do
+              {:ok, [_|_] = equipos} ->
+                IO.puts("\nEquipos disponibles:\n")
+
+                equipos
+                |> Enum.with_index(1)
+                |> Enum.each(fn {equipo, idx} ->
+                  ya_asignado = equipo.id in mentor.equipos_asignados
+                  estado = if ya_asignado, do: "(YA ASIGNADO)", else: ""
+                  IO.puts("  #{idx}. #{equipo.nombre} - #{equipo.tema} #{estado}")
+                end)
+
+                IO.puts("\nSeleccione el numero del equipo:")
+                equipo_opcion = IO.gets("> ") |> String.trim()
+
+                case Integer.parse(equipo_opcion) do
+                  {eq_idx, _} when eq_idx > 0 and eq_idx <= length(equipos) ->
+                    equipo = Enum.at(equipos, eq_idx - 1)
+
+                    case GestionMentores.asignar_a_equipo(mentor.id, equipo.id) do
+                      {:ok, _} ->
+                        IO.puts("\n+ Mentor '#{mentor.nombre}' asignado exitosamente al equipo '#{equipo.nombre}'!\n")
+                      {:error, razon} ->
+                        IO.puts("\nX Error: #{razon}\n")
+                    end
+
+                  _ ->
+                    IO.puts("\nOpcion invalida.\n")
+                end
+
+              {:ok, []} ->
+                IO.puts("\nNo hay equipos disponibles.\n")
+
+              _ ->
+                IO.puts("\nError al obtener equipos.\n")
+            end
+          end
+
+        _ ->
+          IO.puts("\nOpcion invalida.\n")
+      end
+
+    {:ok, []} ->
+      IO.puts("No hay mentores registrados. Registre uno primero (opcion 11).\n")
+
+    _ ->
+      IO.puts("Error al obtener mentores.\n")
   end
 
-  defp recargar_datos do
-    IO.puts("\nRecargando datos...\n")
-    {:ok, _} = Semilla.cargar_datos()
-    IO.puts("Datos recargados exitosamente\n")
-    pausar()
+  pausar()
+end
+
+defp cambiar_estado_proyecto do
+  IO.puts("\n=== CAMBIAR ESTADO DE PROYECTO ===\n")
+
+  case GestionProyectos.listar_proyectos() do
+    {:ok, [_|_] = proyectos} ->
+      IO.puts("Proyectos disponibles:\n")
+
+      proyectos
+      |> Enum.with_index(1)
+      |> Enum.each(fn {proyecto, index} ->
+        IO.puts("  #{index}. #{proyecto.nombre} [Estado actual: #{estado_texto(proyecto.estado)}]")
+      end)
+
+      IO.puts("\nSeleccione el numero del proyecto:")
+      proyecto_opcion = IO.gets("> ") |> String.trim()
+
+      case Integer.parse(proyecto_opcion) do
+        {index, _} when index > 0 and index <= length(proyectos) ->
+          proyecto = Enum.at(proyectos, index - 1)
+
+          IO.puts("\n=== Proyecto: #{proyecto.nombre} ===")
+          IO.puts("Estado actual: #{estado_texto(proyecto.estado)}\n")
+          IO.puts("Seleccione el nuevo estado:")
+          IO.puts("  1. Iniciado")
+          IO.puts("  2. En Progreso")
+          IO.puts("  3. Finalizado")
+          IO.puts("  4. Presentado")
+
+          estado_opcion = IO.gets("\n> ") |> String.trim()
+
+          nuevo_estado = case estado_opcion do
+            "1" -> :iniciado
+            "2" -> :en_progreso
+            "3" -> :finalizado
+            "4" -> :presentado
+            _ -> nil
+          end
+
+          if nuevo_estado do
+            case GestionProyectos.cambiar_estado(proyecto.id, nuevo_estado) do
+              {:ok, _} ->
+                IO.puts("\n+ Estado del proyecto '#{proyecto.nombre}' cambiado a '#{estado_texto(nuevo_estado)}' exitosamente!\n")
+              {:error, razon} ->
+                IO.puts("\nX Error: #{razon}\n")
+            end
+          else
+            IO.puts("\nX Estado invalido.\n")
+          end
+
+        _ ->
+          IO.puts("\nOpcion invalida.\n")
+      end
+
+    {:ok, []} ->
+      IO.puts("No hay proyectos disponibles. Cree uno primero (opcion 10).\n")
+
+    _ ->
+      IO.puts("Error al obtener proyectos.\n")
   end
 
-  defp salir do
-    IO.puts("\n")
-    IO.puts("===============================================")
-    IO.puts("                                               ")
-    IO.puts("      Gracias por usar Code4Future!           ")
-    IO.puts("                                               ")
-    IO.puts("         Desarrollado en Elixir                ")
-    IO.puts("                                               ")
-    IO.puts("===============================================")
-    IO.puts("\n")
-    System.halt(0)
+  pausar()
+end
+
+defp mostrar_ayuda do
+  IO.puts("\n")
+  IO.puts("===============================================")
+  IO.puts("            AYUDA - COMANDOS                  ")
+  IO.puts("===============================================")
+  IO.puts("")
+  IO.puts("  COMANDOS DISPONIBLES:")
+  IO.puts("")
+  IO.puts("  /teams    - Listar todos los equipos")
+  IO.puts("  /projects - Listar todos los proyectos")
+  IO.puts("  /join     - Unirse a un equipo")
+  IO.puts("  /chat     - Ver chat de equipo")
+  IO.puts("  /help     - Mostrar esta ayuda")
+  IO.puts("")
+  IO.puts("  FLUJO RECOMENDADO:")
+  IO.puts("  1. Registrarse como participante (opcion 7)")
+  IO.puts("  2. Ver equipos disponibles (opcion 1)")
+  IO.puts("  3. Unirse a un equipo (opcion 8)")
+  IO.puts("  4. Colaborar en proyectos y chat")
+  IO.puts("")
+  IO.puts("  ACCESO ADMINISTRATIVO:")
+  IO.puts("  - Ver/eliminar participantes y mentores")
+  IO.puts("  - Contraseña: #{@password_acceso}")
+  IO.puts("")
+  IO.puts("===============================================")
+  IO.puts("")
+
+  pausar()
+end
+
+defp recargar_datos do
+  IO.puts("\n")
+  IO.puts("===============================================")
+  IO.puts("         RESUMEN DE DATOS ACTUALES            ")
+  IO.puts("===============================================")
+  IO.puts("")
+
+  # Participantes
+  case GestionParticipantes.listar_participantes() do
+    {:ok, participantes} ->
+      IO.puts("👥 PARTICIPANTES: #{length(participantes)}")
+      if length(participantes) > 0 do
+        Enum.take(participantes, 5)
+        |> Enum.each(fn p ->
+          equipo = case p.equipo_id do
+            nil -> "Sin equipo"
+            equipo_id ->
+              case GestionEquipos.obtener_equipo(equipo_id) do
+                {:ok, eq} -> eq.nombre
+                _ -> "Equipo desconocido"
+              end
+          end
+          IO.puts("   • #{p.nombre} (#{p.correo}) - #{equipo}")
+        end)
+        if length(participantes) > 5 do
+          IO.puts("   ... y #{length(participantes) - 5} más")
+        end
+      end
+      IO.puts("")
+    _ ->
+      IO.puts(" PARTICIPANTES: 0\n")
   end
+
+  # Mentores
+  case GestionMentores.listar_mentores() do
+    {:ok, mentores} ->
+      IO.puts(" MENTORES: #{length(mentores)}")
+      if length(mentores) > 0 do
+        Enum.each(mentores, fn m ->
+          IO.puts("    #{m.nombre} - #{m.especialidad}")
+        end)
+      end
+      IO.puts("")
+    _ ->
+      IO.puts(" MENTORES: 0\n")
+  end
+
+  # Equipos
+  case GestionEquipos.listar_equipos() do
+    {:ok, equipos} ->
+      IO.puts(" EQUIPOS: #{length(equipos)}")
+      if length(equipos) > 0 do
+        Enum.each(equipos, fn e ->
+          IO.puts("   • #{e.nombre} (#{e.tema}) - #{length(e.miembros)} miembros")
+        end)
+      end
+      IO.puts("")
+    _ ->
+      IO.puts(" EQUIPOS: 0\n")
+  end
+
+  # Proyectos
+  case GestionProyectos.listar_proyectos() do
+    {:ok, proyectos} ->
+      IO.puts(" PROYECTOS: #{length(proyectos)}")
+      if length(proyectos) > 0 do
+        Enum.each(proyectos, fn p ->
+          IO.puts("   • #{p.nombre} [#{p.estado}] - #{length(p.avances)} avances")
+        end)
+      end
+      IO.puts("")
+    _ ->
+      IO.puts(" PROYECTOS: 0\n")
+  end
+
+  # Mensajes de chat
+  case SistemaChat.obtener_estadisticas() do
+    {:ok, stats} ->
+      IO.puts(" MENSAJES: #{stats.mensajes_enviados}")
+      IO.puts(" CANALES ACTIVOS: #{stats.canales_activos}")
+      IO.puts("")
+    _ ->
+      IO.puts(" MENSAJES: 0\n")
+  end
+
+  IO.puts("===============================================")
+  IO.puts(" Datos actualizados correctamente")
+  IO.puts("===============================================")
+  IO.puts("")
+
+  pausar()
+end
+
+defp salir do
+  IO.puts("\n")
+  IO.puts("===============================================")
+  IO.puts("                                               ")
+  IO.puts("      Gracias por usar Code4Future!           ")
+  IO.puts("                                               ")
+  IO.puts("         Desarrollado en Elixir                ")
+  IO.puts("                                               ")
+  IO.puts("===============================================")
+  IO.puts("\n")
+  System.halt(0)
+end
 
   # ========== FUNCIONES AUXILIARES ==========
 

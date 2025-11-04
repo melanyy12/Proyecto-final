@@ -9,10 +9,26 @@ defmodule Hackathon.Semilla do
   @password_default "password123"
 
   def cargar_datos do
+    # Solo carga datos si los archivos NO existen
+    if datos_vacios?() do
+      cargar_datos_iniciales()
+    else
+      IO.puts("\n Datos existentes detectados. Sistema listo.\n")
+      {:ok, :datos_existentes}
+    end
+  end
+
+  defp datos_vacios? do
+    not File.exists?("data/participantes.txt") or
+    not File.exists?("data/mentores.txt") or
+    not File.exists?("data/equipos.txt")
+  end
+
+  defp cargar_datos_iniciales do
     IO.puts("\n Cargando datos iniciales de la Hackathon...")
 
-    # Limpiar datos anteriores
-    limpiar_datos()
+    # Crear directorio si no existe
+    File.mkdir_p!("data")
 
     # Cargar participantes
     participantes = cargar_participantes()
@@ -45,28 +61,19 @@ defmodule Hackathon.Semilla do
     IO.puts("\n CREDENCIALES DE ACCESO:")
     IO.puts("====================================")
     IO.puts("Contraseña para TODOS los usuarios: #{@password_default}")
-    IO.puts("\nPARTICIPANTES:")
+    IO.puts("\n PARTICIPANTES:")
     Enum.each(participantes, fn p ->
-      IO.puts("   #{p.correo}")
+      IO.puts("    #{p.correo}")
     end)
-    IO.puts("\nMENTORES:")
+    IO.puts("\n MENTORES:")
     Enum.each(mentores, fn m ->
-      IO.puts("   #{m.correo}")
+      IO.puts("    #{m.correo}")
     end)
     IO.puts("====================================\n")
 
-    IO.puts(" Datos cargados exitosamente!\n")
+    IO.puts("✨ Datos iniciales cargados exitosamente!\n")
 
     {:ok, %{equipos: equipos, proyectos: proyectos, participantes: participantes, mentores: mentores}}
-  end
-
-  defp limpiar_datos do
-    File.rm("data/equipos.txt")
-    File.rm("data/proyectos.txt")
-    File.rm("data/participantes.txt")
-    File.rm("data/mentores.txt")
-    File.rm("data/mensajes.txt")
-    :ok
   end
 
   defp cargar_participantes do
@@ -124,7 +131,6 @@ defmodule Hackathon.Semilla do
   end
 
   defp asignar_participantes_a_equipos(participantes, equipos) do
-    # Asignar 3 participantes por equipo
     participantes
     |> Enum.with_index()
     |> Enum.each(fn {participante, index} ->
@@ -169,7 +175,6 @@ defmodule Hackathon.Semilla do
   end
 
   defp agregar_avances(proyectos) do
-    # Proyecto 1: EduIA Platform
     if proyecto = Enum.at(proyectos, 0) do
       GestionProyectos.agregar_avance(proyecto.id, "Completamos el diseno de la arquitectura del sistema con modulos de IA y base de datos")
       GestionProyectos.agregar_avance(proyecto.id, "Implementamos el algoritmo de personalizacion de contenido usando machine learning")
@@ -177,7 +182,6 @@ defmodule Hackathon.Semilla do
       GestionProyectos.cambiar_estado(proyecto.id, :en_progreso)
     end
 
-    # Proyecto 2: RecycleAI
     if proyecto = Enum.at(proyectos, 1) do
       GestionProyectos.agregar_avance(proyecto.id, "Entrenamos modelo de vision por computadora con 10,000 imagenes de residuos")
       GestionProyectos.agregar_avance(proyecto.id, "Desarrollamos prototipo de app movil con clasificacion en tiempo real")
@@ -185,7 +189,6 @@ defmodule Hackathon.Semilla do
       GestionProyectos.cambiar_estado(proyecto.id, :finalizado)
     end
 
-    # Proyecto 3: TeleMed Connect
     if proyecto = Enum.at(proyectos, 2) do
       GestionProyectos.agregar_avance(proyecto.id, "Implementamos sistema de videollamadas con encriptacion end-to-end")
       GestionProyectos.agregar_avance(proyecto.id, "Integramos sistema de historias clinicas digitales")
@@ -194,7 +197,6 @@ defmodule Hackathon.Semilla do
   end
 
   defp agregar_retroalimentacion(proyectos, mentores) do
-    # Retroalimentación para proyecto 1
     if proyecto = Enum.at(proyectos, 0) do
       if mentor = Enum.at(mentores, 0) do
         GestionProyectos.agregar_retroalimentacion(
@@ -213,7 +215,6 @@ defmodule Hackathon.Semilla do
       end
     end
 
-    # Retroalimentación para proyecto 2
     if proyecto = Enum.at(proyectos, 1) do
       if mentor = Enum.at(mentores, 0) do
         GestionProyectos.agregar_retroalimentacion(
@@ -224,7 +225,6 @@ defmodule Hackathon.Semilla do
       end
     end
 
-    # Retroalimentación para proyecto 3
     if proyecto = Enum.at(proyectos, 2) do
       if mentor = Enum.at(mentores, 2) do
         GestionProyectos.agregar_retroalimentacion(
